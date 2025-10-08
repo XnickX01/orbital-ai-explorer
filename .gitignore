@@ -73,3 +73,6 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+
+*.csv

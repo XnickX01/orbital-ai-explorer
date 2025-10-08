@@ -5,6 +5,14 @@ import os
 import uvicorn
 
 from app.api.endpoints import analysis, recommendations, health, chat
+# Import training modules
+try:
+    from app.api.endpoints import data_ingestion, model_training
+    DATA_INGESTION_AVAILABLE = True
+    MODEL_TRAINING_AVAILABLE = True
+except ImportError:
+    DATA_INGESTION_AVAILABLE = False
+    MODEL_TRAINING_AVAILABLE = False
 
 # Load environment variables
 load_dotenv()
@@ -32,6 +40,13 @@ app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(recommendations.router, prefix="/api/recommendations", tags=["Recommendations"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+
+# Include training endpoints if available
+if DATA_INGESTION_AVAILABLE:
+    app.include_router(data_ingestion.router, prefix="/api/training", tags=["Training & Data Ingestion"])
+
+if MODEL_TRAINING_AVAILABLE:
+    app.include_router(model_training.router, prefix="/api/training", tags=["Model Training"])
 
 @app.get("/")
 async def root():

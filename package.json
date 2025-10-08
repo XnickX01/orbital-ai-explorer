@@ -1,0 +1,49 @@
+{
+  "name": "orbital-ai-explorer",
+  "version": "1.0.0",
+  "description": "Full-stack AI web app that visualizes and interprets real-world aerospace data — built with React, Express, and FastAPI.",
+  "scripts": {
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\" \"npm run ai:dev\"",
+    "client:dev": "cd client && npm run dev",
+    "server:dev": "cd server && npm run dev",
+    "ai:dev": "cd ai-service && python -m uvicorn main:app --reload --port 8001",
+    "client:install": "cd client && npm install",
+    "server:install": "cd server && npm install",
+    "ai:install": "cd ai-service && pip install -r requirements.txt",
+    "install:all": "npm run client:install && npm run server:install && npm run ai:install",
+    "build": "npm run client:build && npm run server:build",
+    "client:build": "cd client && npm run build",
+    "server:build": "cd server && npm run build",
+    "test": "npm run client:test && npm run server:test && npm run ai:test",
+    "client:test": "cd client && npm test",
+    "server:test": "cd server && npm test",
+    "ai:test": "cd ai-service && pytest",
+    "lint": "npm run client:lint && npm run server:lint",
+    "client:lint": "cd client && npm run lint",
+    "server:lint": "cd server && npm run lint",
+    "format": "npm run client:format && npm run server:format",
+    "client:format": "cd client && npm run format",
+    "server:format": "cd server && npm run format"
+  },
+  "keywords": [
+    "space",
+    "data",
+    "visualization",
+    "ai",
+    "nasa",
+    "spacex",
+    "react",
+    "express",
+    "fastapi",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}

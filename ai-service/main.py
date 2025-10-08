@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 import uvicorn
 
-from app.api.endpoints import analysis, recommendations, health
+from app.api.endpoints import analysis, recommendations, health, chat
 
 # Load environment variables
 load_dotenv()
@@ -21,7 +21,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(","),
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3002,http://localhost:3003").split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,6 +31,7 @@ app.add_middleware(
 app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(recommendations.router, prefix="/api/recommendations", tags=["Recommendations"])
+app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 
 @app.get("/")
 async def root():

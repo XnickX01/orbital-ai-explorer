@@ -8,17 +8,18 @@ import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
 import spaceDataRoutes from './routes/spaceData';
 import userRoutes from './routes/user';
+import chatRoutes from './routes/chat';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.SERVER_PORT || 3001;
+const PORT = process.env.SERVER_PORT || 3003;
 
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
   credentials: true,
 }));
 app.use(morgan('combined'));
@@ -38,6 +39,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/space-data', spaceDataRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
@@ -53,8 +55,8 @@ app.use('*', (req, res) => {
 // Start server
 const startServer = async (): Promise<void> => {
   try {
-    // Connect to database
-    await connectDatabase();
+    // Skip database connection for now
+    console.log('⚠️ Running without database connection');
     
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

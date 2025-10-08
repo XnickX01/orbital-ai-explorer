@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: orbital-postgres
+    environment:
+      POSTGRES_DB: orbital_explorer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Express Backend
+  express:
+    build: ./backend/express
+    container_name: orbital-express
+    environment:
+      PORT: 5000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: orbital_explorer
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      NASA_API_KEY: ${NASA_API_KEY:-DEMO_KEY}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/express:/app
+      - /app/node_modules
+
+  # FastAPI Backend
+  fastapi:
+    build: ./backend/fastapi
+    container_name: orbital-fastapi
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/orbital_explorer
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/fastapi:/app
+
+  # React Frontend
+  frontend:
+    build: ./frontend
+    container_name: orbital-frontend
+    environment:
+      VITE_EXPRESS_API_URL: http://localhost:5000
+      VITE_FASTAPI_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - express
+      - fastapi
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
